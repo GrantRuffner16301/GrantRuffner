@@ -1,8 +1,9 @@
 # Hi — I’m Grant Ruffner 👋
 
-I’m a 52‑year‑old adult learner in Oil City, Pennsylvania, transitioning into software engineering. I’m currently enrolled in an AAS in AI Software Engineering at Maestro College and building a portfolio that demonstrates solid fundamentals, clean logic, and practical projects.
+I’m a 52‑year‑old adult located in Oil City, Pennsylvania, transitioning into software engineering. I’m currently enrolled in an AAS in AI Software Engineering at Maestro College and building a portfolio that demonstrates solid fundamentals, clean logic, and practical projects.
 
-"Time not only to learn, let's build things as well."
+"Time not only to learn, but build things as well."
+"Never stop learning, knowledge is for everyone willing to seek it out."
 
 ![GitHub followers](https://img.shields.io/github/followers/GrantRuffner16301?label=Follow&style=social)
 ![Top Langs](https://img.shields.io/github/languages/top/GrantRuffner16301?color=blue)
@@ -42,17 +43,7 @@ I will auto-detect and list top public repositories here. If you prefer specific
   - Bullet 3: clean design
 - Demo / screenshot: ./assets/project-1.gif
 
-### Project 2 — short one-line summary
-- Tech: (e.g., Arduino / C++)
-- Repo: https://github.com/GrantRuffner16301/REPO-2
-- Summary: short bullets
 
-### Project 3 — short one-line summary
-- Tech: (e.g., Kotlin / Android)
-- Repo: https://github.com/GrantRuffner16301/REPO-3
-- Summary: short bullets
-
-(Assets/screenshots will be added later. You can edit this README anytime.)
 
 ## Current focus
 - Coursework projects for Maestro College and improving personal projects.
