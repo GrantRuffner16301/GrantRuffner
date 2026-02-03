@@ -1,0 +1,170 @@
+import pygame
+import math
+import colorsys
+
+# --- Configuration ---
+WIDTH, HEIGHT = 900, 600
+BG_COLOR = (40, 40, 40)
+WHEEL_RADIUS = 120
+CENTER_OFFSET = 150 
+
+# --- Setup Pygame ---
+pygame.init()
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Paint Mixer: Ratio Edition")
+font = pygame.font.SysFont("Arial", 24)
+font_large = pygame.font.SysFont("Arial", 32, bold=True)
+
+def hsv_to_rgb(h, s, v):
+    r, g, b = colorsys.hsv_to_rgb(h, s, v)
+    return int(r * 255), int(g * 255), int(b * 255)
+
+def get_angle(pos, center):
+    dx = pos[0] - center[0]
+    dy = pos[1] - center[1]
+    rads = math.atan2(dy, dx)
+    deg = math.degrees(rads)
+    return (deg + 360) % 360
+
+def mix_colors_weighted(c1, parts1, c2, parts2):
+    """
+    Mixes two colors based on their parts (weights).
+    Formula: (Color1 * Part1 + Color2 * Part2) / TotalParts
+    """
+    total_parts = parts1 + parts2
+    if total_parts == 0: return (0,0,0)
+
+    r = (c1[0] * parts1 + c2[0] * parts2) // total_parts
+    g = (c1[1] * parts1 + c2[1] * parts2) // total_parts
+    b = (c1[2] * parts1 + c2[2] * parts2) // total_parts
+    return (int(r), int(g), int(b))
+
+def draw_text_centered(surface, text, x, y, font_obj, color=(255,255,255)):
+    img = font_obj.render(text, True, color)
+    rect = img.get_rect(center=(x, y))
+    surface.blit(img, rect)
+
+# --- State Variables ---
+left_center = (WIDTH // 2 - CENTER_OFFSET, HEIGHT // 2)
+right_center = (WIDTH // 2 + CENTER_OFFSET, HEIGHT // 2)
+
+angle_left = 0 # Red
+angle_right = 240 # Blue
+
+# Ratios (Parts)
+parts_left = 1
+parts_right = 1
+
+# Toggles for "White Paint"
+left_is_white = False
+right_is_white = False
+
+running = True
+dragging_left = False
+dragging_right = False
+
+print("Controls:")
+print("LEFT WHEEL: Drag to rotate. W/S to change parts.")
+print("RIGHT WHEEL: Drag to rotate. UP/DOWN to change parts.")
+print("SPACE: Toggle Right Wheel to WHITE paint.")
+
+while running:
+    # 1. Event Handling
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        
+        elif event.type == pygame.KEYDOWN:
+            # Left Wheel Controls
+            if event.key == pygame.K_w: parts_left += 1
+            if event.key == pygame.K_s and parts_left > 1: parts_left -= 1
+            
+            # Right Wheel Controls
+            if event.key == pygame.K_UP: parts_right += 1
+            if event.key == pygame.K_DOWN and parts_right > 1: parts_right -= 1
+            
+            # Special Controls
+            if event.key == pygame.K_SPACE:
+                right_is_white = not right_is_white # Toggle White Mode
+            if event.key == pygame.K_LSHIFT:
+                left_is_white = not left_is_white
+
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            m_pos = pygame.mouse.get_pos()
+            if math.hypot(m_pos[0] - left_center[0], m_pos[1] - left_center[1]) < WHEEL_RADIUS:
+                dragging_left = True
+            elif math.hypot(m_pos[0] - right_center[0], m_pos[1] - right_center[1]) < WHEEL_RADIUS:
+                dragging_right = True
+
+        elif event.type == pygame.MOUSEBUTTONUP:
+            dragging_left = False
+            dragging_right = False
+
+    # 2. Logic
+    mouse_pos = pygame.mouse.get_pos()
+    
+    # Update Angles if Dragging
+    if dragging_left: angle_left = get_angle(mouse_pos, left_center)
+    if dragging_right: angle_right = get_angle(mouse_pos, right_center)
+
+    # Determine Actual Colors
+    if left_is_white:
+        color_left = (255, 255, 255)
+    else:
+        color_left = hsv_to_rgb(angle_left / 360.0, 1.0, 1.0)
+
+    if right_is_white:
+        color_right = (255, 255, 255)
+    else:
+        color_right = hsv_to_rgb(angle_right / 360.0, 1.0, 1.0)
+    
+    # Calculate Weighted Mix
+    color_mix = mix_colors_weighted(color_left, parts_left, color_right, parts_right)
+
+    # 3. Drawing
+    screen.fill(BG_COLOR)
+
+    # --- Draw Left Side ---
+    pygame.draw.circle(screen, color_left, left_center, WHEEL_RADIUS)
+    # Indicator line (only if not white mode)
+    if not left_is_white:
+        rads = math.radians(angle_left)
+        end_x = left_center[0] + (WHEEL_RADIUS - 10) * math.cos(rads)
+        end_y = left_center[1] + (WHEEL_RADIUS - 10) * math.sin(rads)
+        pygame.draw.line(screen, (255,255,255), left_center, (end_x, end_y), 3)
+    
+    # Draw Left Parts Count
+    draw_text_centered(screen, f"{parts_left} Parts", left_center[0], left_center[1] + WHEEL_RADIUS + 30, font)
+
+    # --- Draw Right Side ---
+    pygame.draw.circle(screen, color_right, right_center, WHEEL_RADIUS)
+    if not right_is_white:
+        rads = math.radians(angle_right)
+        end_x = right_center[0] + (WHEEL_RADIUS - 10) * math.cos(rads)
+        end_y = right_center[1] + (WHEEL_RADIUS - 10) * math.sin(rads)
+        pygame.draw.line(screen, (255,255,255), right_center, (end_x, end_y), 3)
+
+    # Draw Right Parts Count
+    draw_text_centered(screen, f"{parts_right} Parts", right_center[0], right_center[1] + WHEEL_RADIUS + 30, font)
+    if right_is_white:
+        draw_text_centered(screen, "(White Paint)", right_center[0], right_center[1] - WHEEL_RADIUS - 20, font, (200,200,200))
+
+
+    # --- Draw The Middle Mix ---
+    mid_x = (left_center[0] + right_center[0]) // 2
+    mid_y = (left_center[1] + right_center[1]) // 2 - 50
+    
+    # Draw container
+    pygame.draw.circle(screen, (255, 255, 255), (mid_x, mid_y), 75) 
+    pygame.draw.circle(screen, color_mix, (mid_x, mid_y), 70)
+
+    # Draw Mix Info
+    draw_text_centered(screen, "Result", mid_x, mid_y + 90, font_large)
+    draw_text_centered(screen, f"RGB: {color_mix}", mid_x, mid_y + 120, font, (150, 150, 150))
+    
+    # Instructions
+    draw_text_centered(screen, "Controls: W/S (Left Parts) | UP/DOWN (Right Parts) | SPACE (Toggle White)", WIDTH//2, HEIGHT - 30, font, (100,100,100))
+
+    pygame.display.flip()
+
+pygame.quit()
