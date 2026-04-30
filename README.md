@@ -34,17 +34,22 @@ Perfect practice beats repetition. Practicing something incorrectly only reinfor
 ## Feature projects
 I am still working on uploading photos and Readme's for this area. More to be added.
 
-### Project 1 - anolog clock app for windows
+### Anolog clock app for windows - File: analog_clock.py
 - Tech: (e.g., Python)
 - Repo: https://github.com/GrantRuffner16301/REPO-1
 - Summary:
   - Bullet 1: Working floating analog clock
   - Bullet 2: I built
   - Bullet 3: clean design
-- Mac version coming soon
 - Demo / screenshot: ./assets/project-1.gif
 
-
+### Modern Analog Clock for macOS - File: Modern_Clock2.py
+A sleek, high-performance analog clock built with Python and PyQt6. Designed specifically to complement the aesthetic of the MacBook Air M4, this application functions as a lightweight desktop widget with a focus on customization and transparency.
+   - Frameless & Minimalist: A clean, round-edge design that floats on the desktop.
+   - Dynamic Customization: Toggle minute marks and adjust opacity (20%–100%) via a right-click context menu.
+   - Themed Visuals: Includes presets like Midnight Blue, Stealth Gray, and Mahogany Wood to match your wallpaper.
+   - Always-on-Top: Designed to stay visible while you work without interfering with window focus.
+   - Adaptive Contrast: This ensures the numbers remain readable regardless of the chosen background theme.
 
 ## Current focus
 - Coursework projects for Maestro College and improving personal projects.
