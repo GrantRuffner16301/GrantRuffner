@@ -20,8 +20,8 @@ I’m a 52‑year‑old adult located in Oil City, Pennsylvania, transitioning i
 
 ## Technical experience (self-taught + coursework)
 Primary languages & platforms I’ve used:
-- Python, Java, Kotlin, C++, Arduino
-- Android Studio (basics) and general software development workflows
+- Python, JavaScript, C++ Arduino. some Kotlin
+- Android Studio (basics) in software development workflows
 
 Most projects so far are in Python; A few to be added for Arduino. Also will be putting updated  versions of some project for Mac. I am still implementing some improvements I redid the whole notepad project. it's a whole different notepad still has some bugs I need to correct. then I'll upload it.
 
