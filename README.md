@@ -65,6 +65,25 @@ A custom-built, end-to-end library management solution designed to turn a home b
   - Persistence & UUIDs: Employs uuid for unique tracking and JSON/SQLite for data integrity.
   - Dynamic UI/UX: Features a "Scan Station" with live camera overlays and asynchronous status updates.
 
+### Arduino Smart Bike Tail Light System - FILE: BIKE_LIGHTS.INO
+This pull request introduces a feature-rich tail light system for bicycles using WS2812B LEDs and an I2C OLED Status Display. It provides real-time signaling for braking and turning, along with a cockpit display for the rider.
+#### Core Features
+  - Dynamic Braking: LEDs turn bright red when the brake lever is squeezed (using a normally closed button logic).
+  - Sequential Turn Signals: Smooth, "Audi-style" amber chasing animations for left and right turns.
+  - OLED Status HUD: A 128x64 display that shows the current state (Left/Right/Hazard/Brake/Tail Light) so the rider knows exactly what is being signaled behind them.
+  - Tail Light Mode: Optional low-intensity red running lights for night riding.
+#### Hardware Requirements
+  - Microcontroller: Arduino (Uno/Nano/Pro Mini)
+  - Display: 128x64 I2C OLED (SSD1306)
+  - LEDs: WS2812B Strip (8 pixels used in this config)
+  - Inputs: * Brake: NC Button (Pin 2)
+  - Turn Signals: SPDT Spring-back Switch (Pins 3 & 4)
+  - Tail Light: Toggle Switch (Pin 5)
+### Libraries Used
+  - FastLED.h
+  - Adafruit_GFX.h
+  - Adafruit_SSD1306.h
+
 ## Current focus
 - Coursework projects for Maestro College and improving personal projects.
 - Upload photos and info for projects. Demo links/screenshots for each featured repo.
