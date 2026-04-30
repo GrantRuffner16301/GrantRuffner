@@ -23,7 +23,7 @@ Primary languages & platforms I’ve used:
 - Python, Java, Kotlin, C++, Arduino
 - Android Studio (basics) and general software development workflows
 
-Most projects so far are in Python; some are Arduino and Android Studio projects from coursework and personal improvements.
+Most projects so far are in Python; A few to be added for Arduino. Also will be putting updated  versions of some project for Mac. I am still implementing some improvements I redid the whole notepad project. it's a whole different notepad still has some bugs I need to correct. then I'll upload it.
 
 ## Problem-solving style
 I work iteratively: experiment, identify errors, self-correct, and understand why something failed before fixing it. I value deep understanding and reasoning-based explanations over quick fixes.
@@ -31,8 +31,8 @@ I work iteratively: experiment, identify errors, self-correct, and understand wh
 ## Learning philosophy
 Perfect practice beats repetition. Practicing something incorrectly only reinforces bad habits — I prioritize correct fundamentals, clean logic, and solid foundations.
 
-## Featured projects (auto-detected placeholders)
-I will auto-detect and list top public repositories here. If you prefer specific projects, tell me their names or URLs and I will update this section.
+## Feature projects
+I am still working on uploading photos and Readme's for this area. More to be added.
 
 ### Project 1 - anolog clock app for windows
 - Tech: (e.g., Python)
@@ -41,30 +41,18 @@ I will auto-detect and list top public repositories here. If you prefer specific
   - Bullet 1: Working floating analog clock
   - Bullet 2: I built
   - Bullet 3: clean design
+- Mac version coming soon
 - Demo / screenshot: ./assets/project-1.gif
 
 
 
 ## Current focus
 - Coursework projects for Maestro College and improving personal projects.
-- Near term: add unit tests, GitHub Actions CI, and demo links/screenshots for each featured repo.
+- Upload photos and info for projects. Demo links/screenshots for each featured repo.
 
 ## How to reach me
 - Email: ruffnergrant@gmail.com
-- LinkedIn: (add your LinkedIn URL here)
+- LinkedIn:
 - GitHub: https://github.com/GrantRuffner16301
 
----
 
-Quick repo README checklist (for each project)
-- Title + one-line description
-- Demo screenshot/GIF + short usage example
-- Quick start: install + run (3–6 lines)
-- Tests and CI badge (GitHub Actions)
-- LICENSE (MIT recommended)
-- Topics (set under repo Settings → Topics)
-
-Tips
-- Use small GIFs/screenshots in an assets/ folder to show results fast.
-- Add a simple GitHub Actions workflow to run tests and show a badge.
-- Never commit API keys or .env files; use GitHub Secrets.
