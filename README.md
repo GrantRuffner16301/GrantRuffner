@@ -52,7 +52,7 @@ I am still working on uploading photos and Readme's for this area. More to be ad
 
 ## How to reach me
 - Email: ruffnergrant@gmail.com
-- LinkedIn:
+- LinkedIn:https://www.linkedin.com/in/grant-ruffner-981732400
 - GitHub: https://github.com/GrantRuffner16301
 
 
