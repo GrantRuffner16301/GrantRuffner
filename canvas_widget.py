@@ -48,7 +48,7 @@ def build_page_bundle(scene, y_pos, font_size, html=""):
         text_item.setHtml(html)
         text_item._is_placeholder = False
     else:
-        text_item.setHtml("<p style='font-size:24pt;'>Start Notes Here</p>")
+        text_item.setHtml("<p style='font-size:24pt;'>Maestro Notepad Click Here and Start Typing</p>")
         text_item._is_placeholder = True
 
     text_item.setDefaultTextColor(QColor(0, 0, 0))
