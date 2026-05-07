@@ -17,8 +17,12 @@ Object-Oriented Design: Built using a class-based structure to encapsulate theme
 
 Event Handling: Implemented contextMenuEvent for user interaction and mouseMoveEvent for window positioning.
 
-📸 Preview
-(Note: Upload your screenshot to the assets folder to see it here!)
+## 📸 Preview
+### Main Interface
+![Modern Analog Clock UI](assets/Modern_Clock2.4.png)
+
+### Customization & Themes
+![Clock Customization Menu](assets/Modern_Clock2.7.png)
 
 ⚙️ Requirements & Setup
 Python 3.12+
