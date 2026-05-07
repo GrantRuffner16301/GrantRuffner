@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pong in JavaScript</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; }
+        canvas { display: block; margin: auto; background: #000; }
+    </style>
+</head>
+<body>
+
+<canvas id="game" width="800" height="600"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+// --- PADDLES ---
+const paddleW = 20;
+const paddleH = 120;
+const paddleSpeed = 6;
+
+let leftPaddle = { x: 50, y: 300 - paddleH/2 };
+let rightPaddle = { x: 750 - paddleW, y: 300 - paddleH/2 };
+
+// --- BALL ---
+const ballSize = 20;
+let ball = { x: 400, y: 300, sx: 4, sy: 4 };
+
+// --- SCORE ---
+let scoreLeft = 0;
+let scoreRight = 0;
+
+// --- EXTRA MOVING OBJECTS (your original players list) ---
+let players = [
+    { x: 100, y: 100, w: 25, h: 25, sx: 2, sy: 1 },
+    { x: 200, y: 200, w: 40, h: 40, sx: -1, sy: 2 },
+    { x: 500, y: 300, w: 30, h: 30, sx: 1.5, sy: -2 }
+];
+
+// --- INPUT ---
+let keys = {};
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+// --- GAME LOOP ---
+function loop() {
+    update();
+    draw();
+    requestAnimationFrame(loop);
+}
+
+function update() {
+    // --- LEFT PADDLE (PLAYER) ---
+    if (keys["w"]) leftPaddle.y -= paddleSpeed;
+    if (keys["s"]) leftPaddle.y += paddleSpeed;
+
+    leftPaddle.y = Math.max(0, Math.min(leftPaddle.y, 600 - paddleH));
+
+    // --- RIGHT PADDLE (AI) ---
+    if (ball.y > rightPaddle.y + paddleH/2) rightPaddle.y += paddleSpeed * 0.9;
+    else rightPaddle.y -= paddleSpeed * 0.9;
+
+    rightPaddle.y = Math.max(0, Math.min(rightPaddle.y, 600 - paddleH));
+
+    // --- BALL MOVEMENT ---
+    ball.x += ball.sx;
+    ball.y += ball.sy;
+
+    // Bounce top/bottom
+    if (ball.y <= 0 || ball.y >= 600 - ballSize) ball.sy *= -1;
+
+    // Bounce off paddles
+    if (ball.x <= leftPaddle.x + paddleW &&
+        ball.y + ballSize >= leftPaddle.y &&
+        ball.y <= leftPaddle.y + paddleH) {
+        ball.sx *= -1.1;
+    }
+
+    if (ball.x + ballSize >= rightPaddle.x &&
+        ball.y + ballSize >= rightPaddle.y &&
+        ball.y <= rightPaddle.y + paddleH) {
+        ball.sx *= -1.1;
+    }
+
+    // Score
+    if (ball.x < 0) {
+        scoreRight++;
+        resetBall(-4, 4);
+    }
+    if (ball.x > 800) {
+        scoreLeft++;
+        resetBall(4, -4);
+    }
+
+    // --- UPDATE YOUR ORIGINAL MOVING OBJECTS ---
+    for (let p of players) {
+        p.x += p.sx;
+        p.y += p.sy;
+
+        if (p.x <= 0 || p.x >= 800 - p.w) p.sx *= -1;
+        if (p.y <= 0 || p.y >= 600 - p.h) p.sy *= -1;
+    }
+}
+
+function resetBall(sx, sy) {
+    ball.x = 400;
+    ball.y = 300;
+    ball.sx = sx;
+    ball.sy = sy;
+}
+
+function draw() {
+    ctx.clearRect(0, 0, 800, 600);
+
+    ctx.fillStyle = "white";
+
+    // Paddles
+    ctx.fillRect(leftPaddle.x, leftPaddle.y, paddleW, paddleH);
+    ctx.fillRect(rightPaddle.x, rightPaddle.y, paddleW, paddleH);
+
+    // Ball
+    ctx.fillRect(ball.x, ball.y, ballSize, ballSize);
+
+    // Your bouncing squares
+    ctx.fillStyle = "purple";
+    for (let p of players) {
+        ctx.fillRect(p.x, p.y, p.w, p.h);
+    }
+
+    // Score
+    ctx.fillStyle = "white";
+    ctx.font = "48px Arial";
+    ctx.fillText(scoreLeft, 330, 50);
+    ctx.fillText(scoreRight, 430, 50);
+}
+
+loop();
+</script>
+
+</body>
+</html>
