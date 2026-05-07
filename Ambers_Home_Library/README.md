@@ -1,5 +1,5 @@
 # Amber's Home Library System 📚
-A bespoke library management application developed as a custom gift. This project combines a modern **CustomTkinter** interface with robust backend logic to digitize a home book collection and manage lending for children.
+A bespoke library management application developed as a custom gift. This project combines a modern **CustomTkinter** interface with robust backend logic to digitize a home book collection and manage lending for children. This was wrote for Windows OS
 
 ## 🌟 Key Features
 * **Custom Library Card Generation:** Automatically captures a "selfie" via webcam and generates a professional PDF library card with a unique QR code.
