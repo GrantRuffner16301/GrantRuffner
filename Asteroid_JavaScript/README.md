@@ -3,7 +3,7 @@
 A snappy, vanilla JavaScript reimagining of the classic 1979 arcade hit. This version is built from the ground up using the HTML5 Canvas API, with custom mechanics optimized for modern laptop play.
 
 ## 🕹️ Live Demo
-**[Insert your GitHub Pages link here once you have it]**
+**[https://grantruffner16301.github.io/GrantRuffner/Asteroid_JavaScript/]**
 
 ---
 
