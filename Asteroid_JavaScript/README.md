@@ -46,8 +46,8 @@ This project started on a early rainy morning in Oil City as an experiment in re
 
 ## 📸 Gameplay
 <p align="center">
-  <img src="assets/asteroids1.png" width="45%" />
-  <img src="assets/asteroids2.png" width="45%" />
+  <img src="assets/asteroid1.png" width="45%" />
+  <img src="assets/asteroid2.png" width="45%" />
 </p>
 
 ---
