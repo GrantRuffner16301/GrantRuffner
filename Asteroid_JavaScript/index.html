@@ -800,13 +800,13 @@ function draw() {
 
   if (gameOver) {
     ctx.fillStyle = "red";
-    ctx.font = "40px sans-serif";
+    ctx.font = "bold 40px 'Courier New', monospace";
     ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
-    ctx.font = "20px sans-serif";
+    ctx.font = "20px 'Courier New', monospace";
     ctx.fillText("Press ENTER to restart", canvas.width / 2, canvas.height / 2 + 40);
   } else if (paused) {
     ctx.fillStyle = "yellow";
-    ctx.font = "40px sans-serif";
+    ctx.font = "bold 40px 'Courier New', monospace";
     ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2);
     
     ctx.fillStyle = "cyan";
