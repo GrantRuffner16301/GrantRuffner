@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Asteroids</title>
+  <title>Asteroids With Ship PowerUps</title>
   <style>
     body { margin: 0; background: black; overflow: hidden; }
     canvas { display: block; margin: 0 auto; background: black; }
@@ -11,11 +11,10 @@
 <body>
 <canvas id="gameCanvas" width="800" height="600"></canvas>
 <script>
-
 // ---== CANVAS SETUP ==---
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-
+console.log("RUNNING FILE:", window.location.href);
 // ---== CONSTANTS & HELPERS ==---
 const TWO_PI = Math.PI * 2;
 
@@ -45,42 +44,81 @@ function asteroidColor(radius) {
 function circleCollide(a, b) {
   const dx = a.x - b.x;
   const dy = a.y - b.y;
-  return Math.hypot(dx, dy) < a.radius + b.radius;
+  const dist = Math.hypot(dx, dy);
+  return dist < a.radius + b.radius;
 }
-
 // =--== INPUT HANDLING ==---
-const KEY = { LEFT: 37, UP: 77, RIGHT: 39, SPACE: 32, FLIP: 40 };
+const Controls = {
+  left: 37,     // Left arrow
+  right: 39,    // Right arrow
+  thrust: 86,   // V
+  flip: 82,     // R
+  fire: 70      // F
+};
+
 const keys = {};
 
 window.addEventListener("keydown", e => {
-  // Record the key press
+
+  // Block macOS Command shortcuts (⌘)
+  if (e.metaKey) {
+    e.preventDefault();
+    return;
+  }
+
+  const controlKeys = [
+    Controls.left,
+    Controls.right,
+    Controls.thrust,
+    Controls.flip,
+    Controls.fire
+  ];
+
+  if (controlKeys.includes(e.keyCode)) {
+    e.preventDefault();
+  }
+
+  // Record key press
   keys[e.keyCode] = true;
 
-  // Instant 180 Flip (Only happens once per press)
-  if (!gameOver && !paused && e.keyCode === KEY.FLIP) {
-    ship.angle += Math.PI; 
-    play(SFX.flip, 0.3);
-  } 
-
-  // Restart Logic
+  // Restart game (Enter)
   if (gameOver && e.key === "Enter") {
     restartGame();
+    return;
   }
 
-  // Pause Logic (Handles both 'p' and 'P')
+  // Start game from splash screen
+  if (showSplash) {
+    if (e.key === "Enter") {
+      showSplash = false;
+      paused = false;
+    }
+    return;
+  }
+
+  // Pause toggle (P or p)
   if (e.key.toLowerCase() === "p") {
     paused = !paused;
+    return;
   }
 
-  // Prevent browser scrolling for game keys (Arrows, Space, M)
-  if ([37, 39, 40, 32, 77].includes(e.keyCode)) {
-    e.preventDefault();
+  if (paused) return;
+
+  // Instant 180° Flip (O key)
+  if (e.keyCode === Controls.flip) {
+    ship.angle += Math.PI;
+    play(SFX.flip, 0.3);
+  }
+
+  if (e.keyCode === Controls.fire && !gameOver && !e.repeat) {
+    ship.shoot();
   }
 });
 
 window.addEventListener("keyup", e => {
   keys[e.keyCode] = false;
 });
+
 
 // ==================================
 // ==---== CLASSES ==---==
@@ -103,31 +141,34 @@ class Ship {
   }
 
   update() {
-    if (keys[KEY.LEFT])  this.angle -= 0.08;
-    if (keys[KEY.RIGHT]) this.angle += 0.08;
-    if (keys[KEY.UP]) {
+    // Turning
+    if (keys[Controls.left])  this.angle -= 0.1;
+    if (keys[Controls.right]) this.angle += 0.1;
+
+    // Thrust (K key)
+    if (keys[Controls.thrust]) {
       this.velX += Math.cos(this.angle) * this.thrust;
       this.velY += Math.sin(this.angle) * this.thrust;
     }
 
+    // Apply friction
     this.velX *= this.friction;
     this.velY *= this.friction;
+
+    // Move ship
     this.x += this.velX;
     this.y += this.velY;
 
-    // Wrap horizontally
-    if (this.x < -this.radius) {
-      this.x = canvas.width + this.radius;
-    } else if (this.x > canvas.width + this.radius) {
-      this.x = -this.radius;
+    // Screen wrap
+    if (this.x < 0) this.x = canvas.width;
+    if (this.x > canvas.width) this.x = 0;
+    if (this.y < 0) this.y = canvas.height;
+    if (this.y > canvas.height) this.y = 0;
+
+    // Invincibility countdown
+    if (this.invincible > 0) {
+      this.invincible--;
     }
-    // Wrap vertically
-    if (this.y < -this.radius) {
-      this.y = canvas.height + this.radius;
-    } else if (this.y > canvas.height + this.radius) {
-      this.y = -this.radius;
-    }
-    if (this.invincible > 0) this.invincible--;
   }
 
   draw() {
@@ -149,7 +190,7 @@ class Ship {
       ctx.fill();
       ctx.stroke();
 
-      if (keys[KEY.UP]) {
+      if (keys[Controls.thrust]) {
         ctx.beginPath();
         ctx.moveTo(-15, -6);
         ctx.lineTo(-25, 0);
@@ -161,20 +202,110 @@ class Ship {
     ctx.restore();
   }
 
-  shoot() {
-    if (!this.canShoot) return;
-    play(SFX.laser, 0.2);
+  fireAngle(angle) {
     const speed = 15;
     bullets.push(new Bullet(
-      this.x + Math.cos(this.angle) * this.radius,
-      this.y + Math.sin(this.angle) * this.radius,
-      Math.cos(this.angle) * speed + this.velX,
-      Math.sin(this.angle) * speed + this.velY
+      this.x + Math.cos(angle) * this.radius,
+      this.y + Math.sin(angle) * this.radius,
+      Math.cos(angle) * speed + this.velX,
+      Math.sin(angle) * speed + this.velY
     ));
+  }
+
+  shoot() {
+    if (!this.canShoot) return;
     this.canShoot = false;
     setTimeout(() => this.canShoot = true, this.reloadTime);
+
+    play(SFX.laser, 0.2);
+
+    // --- POWERUP FIRING MODES ---
+    if (activePowerup === "spread") {
+      this.fireAngle(this.angle - 0.15);
+      this.fireAngle(this.angle);
+      this.fireAngle(this.angle + 0.15);
+      return;
+    }
+
+    if (activePowerup === "double") {
+      const spread = [-0.25, -0.15, 0, 0.15, 0.25];
+      spread.forEach(a => this.fireAngle(this.angle + a));
+      return;
+    }
+
+    if (activePowerup === "pierce") {
+      const b = new Bullet(
+        this.x + Math.cos(this.angle) * this.radius,
+        this.y + Math.sin(this.angle) * this.radius,
+        Math.cos(this.angle) * 15 + this.velX,
+        Math.sin(this.angle) * 15 + this.velY
+      );
+      b.pierce = 3;
+      bullets.push(b);
+      return;
+    }
+
+    if (activePowerup === "ricochet") {
+      const b = new Bullet(
+        this.x + Math.cos(this.angle) * this.radius,
+        this.y + Math.sin(this.angle) * this.radius,
+        Math.cos(this.angle) * 15 + this.velX,
+        Math.sin(this.angle) * 15 + this.velY
+      );
+      b.bounced = false;
+      bullets.push(b);
+      return;
+    }
+
+    // --- NORMAL SHOT ---
+    this.fireAngle(this.angle);
   }
 }
+
+class Powerup {
+  constructor(type) {
+    this.type = type;
+
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+
+    this.vx = (Math.random() - 0.5) * 0.3;
+    this.vy = (Math.random() - 0.5) * 0.3;
+    
+    this.radius = 20;
+    this.life = 600; // lasts 10 seconds on the map
+  }
+
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+
+    this.life--;
+
+    this.vx *= 0.98;
+    this.vy *= 0.98;
+
+    // Wrap around screen
+    if (this.x < -this.radius) this.x = canvas.width + this.radius;
+    if (this.x > canvas.width + this.radius) this.x = -this.radius;
+    if (this.y < -this.radius) this.y = canvas.height + this.radius;
+    if (this.y > canvas.height + this.radius) this.y = -this.radius;
+  }
+
+  draw() {
+    ctx.fillStyle = "rgb(180, 100, 30)";
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, TWO_PI);
+    ctx.fill();
+
+    ctx.fillStyle = "black";
+    ctx.font = "12px Courier New";
+    ctx.textAlign = "center";
+    ctx.fillText(this.type[0].toUpperCase(), this.x, this.y + 4);
+  }
+}
+
+window.Powerup = Powerup;
 
 // ---== BULLET ==---
 class Bullet {
@@ -184,7 +315,9 @@ class Bullet {
     this.vx = vx;
     this.vy = vy;
     this.radius = 3;
+    this.pierce = 3; // can hit 3 asteroids
     this.life = 30;
+    this.bounced = false;
   }
 
   update() {
@@ -252,18 +385,14 @@ class Asteroid {
   }
 
   draw() {
-    if (this.invincible > 0) {
-      const flickerSpeed = this.invincible > 60 ? 10 : 5; 
-      if (Math.floor(this.invincible / flickerSpeed) % 2 === 0) return; 
-    }
-
     ctx.save();
     ctx.translate(this.x, this.y);
-    ctx.rotate(this.angle);
+
     const color = asteroidColor(this.radius);
     ctx.fillStyle = color;
     ctx.strokeStyle = color;
     ctx.lineWidth = 2;
+
     ctx.beginPath();
     const step = TWO_PI / this.vertices.length;
     for (let i = 0; i < this.vertices.length; i++) {
@@ -277,6 +406,7 @@ class Asteroid {
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
+
     ctx.restore();
   }
 }
@@ -310,6 +440,7 @@ class Particle {
 
 // ==---== GAME STATE ==---==
 const ship = new Ship();
+let showSplash = true;
 let bullets = [];
 let asteroids = [];
 let particles = [];
@@ -318,10 +449,70 @@ let highScore = localStorage.getItem("asteroidHighScore") || 0;
 let level = 1;
 let lives = 3;
 let gameOver = false;
-let paused = true;
+let paused = false;
 let shakeTime = 0;
+let powerupSpawnCooldown = 0;
+let powerups = [];
+let activePowerup = null;
+let powerupTimer = 0;
+
+
 
 // ==---== CORE GAME FUNCTIONS ==---==
+function drawSplashScreen() {
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.textAlign = "center";
+
+  // --- METALLIC BLUE GRADIENT ---
+  const titleGradient = ctx.createLinearGradient(0, 0, 0, 80);
+  titleGradient.addColorStop(0,   "#d6eaff");  // brighter top shine
+  titleGradient.addColorStop(0.5, "#6fbaff");  // lighter mid metal
+  titleGradient.addColorStop(1,   "#1d4e89");  // brighter steel blue bottom
+
+  //ctx.textAlign = "center";
+
+  // --- MAIN TITLE ---
+  ctx.font = "bold 72px Courier New";
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "rgba(255,255,255,0.25)";
+  ctx.fillStyle = titleGradient;
+
+  // Neon red glow
+  ctx.shadowColor = "rgba(255, 60, 60, 1)";
+  ctx.shadowBlur = 15;
+
+  // Draw stroke FIRST (outline)
+  ctx.strokeText("ASTEROIDS", canvas.width / 2, canvas.height / 2 - 120);
+
+  // Draw fill SECOND (metallic gradient)
+  ctx.fillText("ASTEROIDS", canvas.width / 2, canvas.height / 2 - 120);
+
+  // --- SUBTITLE ---
+  ctx.font = "bold 30px Courier New";
+  ctx.fillStyle = titleGradient;
+  ctx.fillText("Now With Ship PowerUps", canvas.width / 2, canvas.height / 2 - 80);
+
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = "gray";
+  ctx.font = "bold 24px Courier New"; 
+  ctx.fillText("Your Action Keys", canvas.width / 2, canvas.height / 2 - 45); 
+  // Reset glow so other text doesn't glow
+ 
+  ctx.font = "24px Courier New"; 
+  ctx.textAlign = "left";
+  const leftX = canvas.width / 2 - 100;  // adjust this number to taste
+  ctx.fillText("Left   -  TURN", leftX, canvas.height / 2 - 10);
+  ctx.fillText("Right  -  TURN", leftX, canvas.height / 2 + 20);
+  ctx.fillText("V      -  THRUST", leftX, canvas.height / 2 + 50);
+  ctx.fillText("R      -  180 FLIP", leftX, canvas.height / 2 + 80);
+  ctx.fillText("F      -  FIRE", leftX, canvas.height / 2 + 110);
+  ctx.fillText("P      -  PAUSE", leftX, canvas.height / 2 + 140);
+  ctx.textAlign = "center";
+  ctx.font = "bold 24px Courier New";
+  ctx.fillText("PRESS ENTER TO START", canvas.width / 2, canvas.height / 2 + 190);
+}
 function spawnAsteroids(count) {
   for (let i = 0; i < count; i++) {
     let x, y;
@@ -409,24 +600,42 @@ function restartGame() {
 
 // ==---== MAIN LOOP ==---==
 function update() {
+  if (showSplash) {
+    return; // Keep the splash screen static until the player starts
+  }
+
   if (gameOver || paused) {
     // If the game stops, make sure the engine sound stops too!
     SFX.boost.pause();
     return;
   }
 
+  if (powerupSpawnCooldown > 0) {
+    powerupSpawnCooldown--;
+  } else {
+    if (Math.random() < 0.002) {
+      const types = ["ricochet", "spread", "pierce", "double"];
+      const pick = types[Math.floor(Math.random() * types.length)];
+      powerups.push(new Powerup(pick));
+      powerupSpawnCooldown = 300; // 5 seconds at 60fps
+    }
+  }
+
   // ---== ENGINE BOOST SOUND ==---
-  if (keys[KEY.UP]) {
-    // Only play if it's not already playing (prevents "machine gun" sound)
+  if (keys[Controls.thrust]) {
     if (SFX.boost.paused) {
-      SFX.boost.loop = true;
-      SFX.boost.volume = 0.75; // Engine should be quieter than explosions
-      SFX.boost.play();
+        SFX.boost.loop = true;
+        SFX.boost.volume = 0.75;
+        SFX.boost.play();
     }
   } else {
-    // Stop the engine immediately when you let go of the key
-    SFX.boost.pause();
-    SFX.boost.currentTime = 0;
+      SFX.boost.pause();
+      SFX.boost.currentTime = 0;
+  }
+
+  if (powerupTimer > 0) {
+    powerupTimer--;
+    if (powerupTimer === 0) activePowerup = null;
   }
 
   ship.update();
@@ -434,18 +643,88 @@ function update() {
   bullets.forEach(b => b.update());
   asteroids.forEach(a => a.update());
   particles.forEach(p => p.update());
+  powerups.forEach(p => p.update());
   bullets = bullets.filter(b => b.life > 0);
   particles = particles.filter(p => p.life > 0);
 
   for (let i = asteroids.length - 1; i >= 0; i--) {
     for (let j = bullets.length - 1; j >= 0; j--) {
       if (circleCollide(asteroids[i], bullets[j])) {
-        bullets.splice(j, 1);
+        const bullet = bullets[j];
+
+        // --- PIERCE LOGIC ---
+        if (activePowerup === "pierce") {
+          if (bullet.pierce > 0) {
+            bullet.pierce--;
+          } else {
+            bullets.splice(j, 1);
+          }
+        }
+
+        // --- RICOCHET LOGIC ---
+        else if (activePowerup === "ricochet") {
+          if (!bullet.bounced) {
+            let nearest = null;
+            let nearestDist = Infinity;
+
+            for (let k = 0; k < asteroids.length; k++) {
+              if (k === i) continue;
+              const dx = asteroids[k].x - bullet.x;
+              const dy = asteroids[k].y - bullet.y;
+              const dist = dx*dx + dy*dy;
+              if (dist < nearestDist) {
+                nearestDist = dist;
+                nearest = asteroids[k];
+              }
+            }
+
+            if (nearest) {
+              const angle = Math.atan2(nearest.y - bullet.y, nearest.x - bullet.x);
+              bullet.vx = Math.cos(angle) * 15;
+              bullet.vy = Math.sin(angle) * 15;
+              bullet.bounced = true;
+              bullet.life = 20;
+            } else {
+              bullets.splice(j, 1);
+            }
+          } else {
+            bullets.splice(j, 1);
+          }
+        }
+
+        // --- NORMAL BULLET ---
+        else {
+          bullets.splice(j, 1);
+        }
+
         score += 10;
         splitAsteroid(asteroids[i], i);
         break;
       }
     }
+  }
+
+  for (let a of asteroids) {
+    for (let p of powerups) {
+      if (circleCollide(a, p)) {
+        const angle = Math.atan2(p.y - a.y, p.x - a.x);
+        p.vx += Math.cos(angle) * 0.5;
+        p.vy += Math.sin(angle) * 0.5;
+      }
+    }
+  }
+
+  for (let i = powerups.length - 1; i >= 0; i--) {
+    const p = powerups[i];
+
+    if (circleCollide(p, ship)) {
+      activePowerup = p.type;
+      powerupTimer = 600; // 10 seconds of power
+      powerups.splice(i, 1);
+      break;
+    }
+
+    if (p.life <= 0) powerups.splice(i, 1);
   }
 
   for (let i = 0; i < asteroids.length; i++) {
@@ -465,6 +744,11 @@ function draw() {
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  if (showSplash) {
+    drawSplashScreen();
+    return;
+  }
+
   ctx.save(); 
   if (shakeTime > 0) {
     const dx = Math.random() * 6 - 3;
@@ -477,6 +761,7 @@ function draw() {
   bullets.forEach(b => b.draw());
   asteroids.forEach(a => a.draw());
   particles.forEach(p => p.draw());
+  powerups.forEach(p => p.draw());
   ctx.restore();
 
   // ---== UI OVERLAY ==---
@@ -492,14 +777,17 @@ function draw() {
 
   // Controls Legend (Right Side)
   ctx.textAlign = "right";
-  ctx.fillStyle = "rgba(255, 255, 255, 0.6)"; // Slightly faded
+  ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+  ctx.font = "16px Courier New";
   ctx.fillText("CONTROLS", canvas.width - 20, 30);
+
   ctx.font = "14px Courier New";
-  ctx.fillText("[M] THRUST", canvas.width - 20, 55);
-  ctx.fillText("[ARROWS] TURN", canvas.width - 20, 75);
-  ctx.fillText("[DOWN] 180 FLIP", canvas.width - 20, 95);
-  ctx.fillText("[SPACE] FIRE", canvas.width - 20, 115);
+  ctx.fillText("[V] THRUST", canvas.width - 20, 55);
+  ctx.fillText("[Left / Right] TURN", canvas.width - 20, 75);
+  ctx.fillText("[R] 180 FLIP", canvas.width - 20, 95);
+  ctx.fillText("[F] FIRE", canvas.width - 20, 115);
   ctx.fillText("[P] PAUSE", canvas.width - 20, 135);
+
 
   // Update High Score Logic
   if (score > highScore) {
@@ -525,6 +813,14 @@ function draw() {
     ctx.font = "20px 'Courier New', monospace";
     ctx.fillText("SYSTEMS READY - PRESS 'P' TO ENGAGE", canvas.width / 2, canvas.height / 2 + 50);
   }
+
+  if (activePowerup) {
+    ctx.fillStyle = "cyan";
+    ctx.font = "18px Courier New";
+    ctx.fillText(`POWER: ${activePowerup.toUpperCase()} (${Math.ceil(powerupTimer/60)})`,
+                 canvas.width/2, 40);
+  }
+
 }
 
 function loop() {
@@ -537,10 +833,6 @@ function loop() {
 spawnAsteroids(5);
 loop();
 
-// ==---== SHOOTING ==---==
-window.addEventListener("keydown", e => {
-  if (e.keyCode === KEY.SPACE && !gameOver) ship.shoot();
-});
 </script>
 </body>
 </html>
