@@ -7,10 +7,6 @@ Engineering to formalize and expand a lifelong foundation in computing, radio
 communications, and microcontroller development. Known for reliability,
 problem-solving, and delivering results in fast-paced environments.
 
-
-![GitHub followers](https://img.shields.io/github/followers/GrantRuffner16301?label=Follow&style=social)
-![Top Langs](https://img.shields.io/github/languages/top/GrantRuffner16301?color=blue)
-
 ## About me
 - 🔭 Current study: AAS in AI Software Engineering — Maestro College
 - 🎯 Career goal: Complete the AAS, build a strong project portfolio, continue to a BS in Computer Science, and move into a professional software or AI-adjacent role.
