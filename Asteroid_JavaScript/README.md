@@ -1,19 +1,22 @@
-# 🚀 Modern Asteroids: Oil City Edition
+# 🚀 Asteroids: Ship PowerUps Edition
 
-A snappy, vanilla JavaScript reimagining of the classic 1979 arcade hit. This version is built from the ground up using the HTML5 Canvas API, with custom mechanics optimized for modern laptop play.
+A polished, high-octane reimagining of the classic arcade shooter, built from the ground up in Vanilla JavaScript. This version introduces a metallic-themed UI, an ergonomic control scheme, and dynamic ship upgrades.
 
-## 🕹️ Live Demo
-**[https://grantruffner16301.github.io/GrantRuffner/Asteroid_JavaScript/]**
+## 🕹️ [Live Demo](https://grantruffner16301.github.io/GrantRuffner/Asteroid_JavaScript/)
 
 ---
 
 ## ✨ Features
 
-* **J-Turn Mechanic:** Instantly perform a 180-degree flip to engage enemies behind you.
-* **Ergonomic Controls:** Movement remapped to the **[M]** key to solve the "cramped arrow key" issue found on MacBook Air and other compact laptops.
-* **Persistent High Scores:** Your best performance is saved to your browser's local storage.
-* **Adaptive Difficulty:** The asteroid density increases every level you clear.
-* **Enhanced Feedback:** Screen shake effects, particle-based explosions, and high-speed projectiles (Speed 15) for a more modern feel.
+### 🛠️ Combat Systems & Mechanics
+* **Signature Tactical 180° Flip:** Execute instant redirection for high-speed "drift-shooting" maneuvers.
+* **Dynamic Power-Up Engine:** Capture specialized orbs to override primary weapon systems:
+    * **Spread:** Wide-area suppression fire.
+    * **Double:** High-density parallel rounds.
+    * **Pierce:** Kinetic slugs that travel through multiple targets.
+    * **Ricochet:** Tracking projectiles that seek the nearest threat upon impact.
+* **Persistent High Scores:** Integrated local storage to track and save your all-time records.
+* **MacBook Optimized:** Custom ergonomic control scheme designed specifically for modern laptop keyboards.
 
 ---
 
@@ -21,17 +24,16 @@ A snappy, vanilla JavaScript reimagining of the classic 1979 arcade hit. This ve
 
 | Action | Key |
 | :--- | :--- |
-| **Thrust (Engine)** | `M` |
+| **Thrust (Engine)** | `V` |
 | **Rotate Ship** | `Left / Right Arrows` |
-| **Instant 180° Flip** | `Down Arrow` |
-| **Fire Lasers** | `Spacebar` |
+| **Instant 180° Flip** | `R` |
+| **Fire Lasers** | `F` |
 | **Pause / Resume** | `P` |
 | **Restart Game** | `Enter` (on Game Over screen) |
 
 ---
 
 ## 🛠️ Technical Highlights
-
 * **Zero Dependencies:** Written in 100% Vanilla JavaScript. No game engines or libraries (like Phaser or PixiJS) were used.
 * **Canvas API:** Hand-coded rendering loop for high-performance vector-style graphics.
 * **Custom Audio Engine:** Implemented a non-blocking audio trigger system to allow overlapping sound effects (explosions, lasers, and engine hum) without lag.
@@ -39,8 +41,9 @@ A snappy, vanilla JavaScript reimagining of the classic 1979 arcade hit. This ve
 ---
 
 ## 📝 Development Story
+This project started on an early rainy morning in Oil City as an experiment in re-optimizing classic game controls for modern hardware. The focus was on precision and "feel." I spent hours tuning the friction and thrust variables to ensure the ship didn't just move, but glided. 
 
-This project started on a early rainy morning in Oil City as an experiment in re-optimizing classic game controls for modern hardware. The goal was to take a 40-year-old game loop and make it feel "snappy" on a modern MacBook Air. I finished the whole thing at late into the night. It was a little after midnight when i started pushing it to GitHub up. Enjoy.
+The addition of the Power-Up system was the biggest challenge. It was an exercise in managing complex object states and collision physics. Ensuring that even when the screen is full of debris, the floating upgrades responded realistically to asteroid collisions (the "Bumping" logic) while maintaining a locked 60FPS. I specifically overhauled the control layout to a `V`/`R`/`F` and Right/Left key cluster to provide a more ergonomic experience for modern laptop players, reducing hand strain during high-level play.
 
 ---
 
@@ -49,6 +52,11 @@ This project started on a early rainy morning in Oil City as an experiment in re
   <img src="assets/asteroid1.png" width="45%" />
   <img src="assets/asteroid2.png" width="45%" />
 </p>
+
+---
+
+## 🚀 Deployment
+This project is hosted via **GitHub Pages**. Every push to the `main` branch automatically updates the live environment, allowing for rapid iteration and testing.
 
 ---
 
