@@ -78,41 +78,29 @@ window.addEventListener("keydown", e => {
     e.preventDefault();
   }
 
-  // Record key press
-  keys[e.keyCode] = true;
-
-  // Restart game (Enter)
-  if (gameOver && e.key === "Enter") {
-    restartGame();
-    return;
-  }
-
-  // Start game from splash screen
-  if (showSplash) {
-    if (e.key === "Enter") {
-      showSplash = false;
-      paused = false;
+  if (e.key === "Enter") {
+        if (gameOver) { restartGame(); return; }
+        if (showSplash) { showSplash = false; paused = false; return; }
     }
-    return;
-  }
 
-  // Pause toggle (P or p)
-  if (e.key.toLowerCase() === "p") {
-    paused = !paused;
-    return;
-  }
+    if (e.key.toLowerCase() === "p") {
+        paused = !paused;
+        return; 
+    }
 
-  if (paused) return;
+    // 2. Action Keys (ONLY work if NOT paused and NOT game over)
+    if (paused || gameOver || showSplash) return; 
 
-  // Instant 180° Flip (O key)
-  if (e.keyCode === Controls.flip) {
-    ship.angle += Math.PI;
-    play(SFX.flip, 0.3);
-  }
+    keys[e.keyCode] = true;
 
-  if (e.keyCode === Controls.fire && !gameOver && !e.repeat) {
-    ship.shoot();
-  }
+    if (e.keyCode === Controls.flip) {
+        ship.angle += Math.PI;
+        play(SFX.flip, 0.3);
+    }
+
+    if (e.keyCode === Controls.fire && !e.repeat) {
+        ship.shoot();
+    }
 });
 
 window.addEventListener("keyup", e => {
