@@ -784,16 +784,16 @@ function draw() {
   }
 
   // ---== SCREENS (PAUSE / GAME OVER) ==---
-  ctx.textAlign = "center";
+  
 
   if (gameOver) {
+    ctx.textAlign = "center";
     ctx.fillStyle = "red";
     ctx.font = "bold 40px 'Courier New', monospace";
     ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
     ctx.font = "20px 'Courier New', monospace";
     ctx.fillText("Press ENTER to restart", canvas.width / 2, canvas.height / 2 + 40);
   } else if (paused) {
-    ctx.textAlign = "center";
     ctx.fillStyle = "yellow";
     ctx.font = "bold 40px 'Courier New', monospace";
     ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2);
