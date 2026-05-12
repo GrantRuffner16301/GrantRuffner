@@ -21,13 +21,20 @@ const TWO_PI = Math.PI * 2;
 // ---== AUDIO ASSETS ==---
 const SFX = {
   laser:    new Audio('sounds/laser4.ogg'),
+  torpedo:  new Audio('sounds/laser5.ogg'),
   expBig:   new Audio('sounds/explosion1.ogg'),
   expMed:   new Audio('sounds/explosion2.ogg'),
   expSml:   new Audio('sounds/explosion3.ogg'),
+  bigBoom:  new Audio('sounds/explosion6.ogg'),
   boost:    new Audio('sounds/boost.ogg'),
   warp:     new Audio('sounds/warpout.ogg'),
-  flip:     new Audio('sounds/flip.ogg')
+  flip:     new Audio('sounds/flip.ogg'),
+  extraLife: new Audio('sounds/extraLife.mp3'),
+  splashScreen: new Audio('sounds/SplashScreen.mp3')
 };
+
+SFX.splashScreen.loop = true;
+SFX.splashScreen.volume = 0.30;
 
 // Helper function to play sounds so they can overlap
 function play(audio, vol = 0.5) {
@@ -47,13 +54,72 @@ function circleCollide(a, b) {
   const dist = Math.hypot(dx, dy);
   return dist < a.radius + b.radius;
 }
+/* ===========================
+      SECTION: STARFIELD
+   =========================== */
+let stars = [];
+
+function initStarfield() {
+  const numStars = 200;
+
+  for (let i = 0; i < numStars; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      z: Math.random() * 3 + 1,
+      size: Math.random() * 2 + 1,
+      twinkle: Math.random() * 0.05 + 0.02
+    });
+  }
+}
+
+function updateStarfield() {
+  const speed = ship.boosting ? 2 : 0.5;
+
+  for (let s of stars) {
+    s.y += speed * s.z;
+
+    if (s.y > canvas.height) {
+      s.y = 0;
+      s.x = Math.random() * canvas.width;
+    }
+
+    s.size += Math.sin(Date.now() * s.twinkle) * 0.02;
+  }
+}
+
+function drawStarfield() {
+  for (let s of stars) {
+    const brightness = 150 + s.z * 50;
+    ctx.fillStyle = `rgb(${brightness}, ${brightness}, ${brightness})`;
+
+    const shakeX = shakeTime > 0 ? (Math.random() - 0.5) * 2 : 0;
+    const shakeY = shakeTime > 0 ? (Math.random() - 0.5) * 2 : 0;
+
+    ctx.fillRect(s.x + shakeX, s.y + shakeY, s.size, s.size);
+  }
+
+  if (ship.boosting) {
+    ctx.strokeStyle = "rgba(255,255,255,0.2)";
+    ctx.lineWidth = 1;
+
+    for (let s of stars) {
+      ctx.beginPath();
+      ctx.moveTo(s.x, s.y);
+      ctx.lineTo(s.x, s.y - 10 * s.z);
+      ctx.stroke();
+    }
+  }
+}
+
 // =--== INPUT HANDLING ==---
 const Controls = {
   left: 37,     // Left arrow
   right: 39,    // Right arrow
   thrust: 86,   // V
   flip: 82,     // R
-  fire: 70      // F
+  fire: 70,     // F
+  torpedo: 66   // B
 };
 
 const keys = {};
@@ -71,48 +137,65 @@ window.addEventListener("keydown", e => {
     Controls.right,
     Controls.thrust,
     Controls.flip,
-    Controls.fire
+    Controls.fire,
+    Controls.torpedo
   ];
 
   if (controlKeys.includes(e.keyCode)) {
     e.preventDefault();
   }
 
-  if (e.key === "Enter") {
-        if (gameOver) { restartGame(); return; }
-        if (showSplash) { showSplash = false; paused = false; return; }
+  // Record key press
+  keys[e.keyCode] = true;
+
+  // Restart game (Enter)
+  if (gameOver && e.key === "Enter") {
+    restartGame();
+    return;
+  }
+
+  // Start game from splash screen
+  if (showSplash) {
+    if (e.key === "Enter") {
+      SFX.splashScreen.pause();
+      SFX.splashScreen.currentTime = 0;
+      showSplash = false;
+      paused = false;
     }
+    return;
+  }
 
-    if (e.key.toLowerCase() === "p") {
-        paused = !paused;
-        return; 
-    }
+  // Pause toggle (P or p)
+  if (e.key.toLowerCase() === "p") {
+    paused = !paused;
+    return;
+  }
 
-    // 2. Action Keys (ONLY work if NOT paused and NOT game over)
-    if (paused || gameOver || showSplash) return; 
+  if (paused) return;
 
-    keys[e.keyCode] = true;
+  if (e.keyCode === Controls.torpedo && !torpedo && torpedoCooldown === 0) {
+    torpedo = new Torpedo(ship.x, ship.y, ship.angle);
+    play(SFX.torpedo, 0.8);
+    torpedoCooldown = torpedoCooldownMax;
+  }
 
-    if (e.keyCode === Controls.flip) {
-        ship.angle += Math.PI;
-        play(SFX.flip, 0.3);
-    }
+  // Instant 180° Flip (O key)
+  if (e.keyCode === Controls.flip) {
+    ship.angle += Math.PI;
+    play(SFX.flip, 0.3);
+  }
 
-    if (e.keyCode === Controls.fire && !e.repeat) {
-        ship.shoot();
-    }
+  if (e.keyCode === Controls.fire && !gameOver && !e.repeat) {
+    ship.shoot();
+  }
 });
 
 window.addEventListener("keyup", e => {
   keys[e.keyCode] = false;
 });
-
-
-// ==================================
-// ==---== CLASSES ==---==
-// ==================================
-
-// ---== SHIP ==---
+/* ===========================
+      SECTION: SHIP CLASS
+   =========================== */
 class Ship {
   constructor() {
     this.x = canvas.width / 2;
@@ -121,20 +204,35 @@ class Ship {
     this.angle = 0;
     this.velX = 0;
     this.velY = 0;
-    this.thrust = 0.12;
-    this.friction = 0.99;
+    this.thrust = 0.09;
+    this.friction = 0.97;
     this.canShoot = true;
-    this.reloadTime = 150;
+    this.reloadTime = 110;
+    this.fireCooldown = 0;
+    this.fireRate = 10; // frames between shots
     this.invincible = 0;
+    this.boosting = false;
   }
 
   update() {
+    if (this.fireCooldown > 0) {
+        this.fireCooldown--;
+    }
+
+    // Continuous fire
+    if (keys[Controls.fire] && this.fireCooldown === 0 && !gameOver) {
+      this.shoot();
+      this.fireCooldown = this.fireRate;
+    }
+
     // Turning
     if (keys[Controls.left])  this.angle -= 0.1;
     if (keys[Controls.right]) this.angle += 0.1;
 
+    this.boosting = keys[Controls.thrust];
+
     // Thrust (K key)
-    if (keys[Controls.thrust]) {
+    if (this.boosting) {
       this.velX += Math.cos(this.angle) * this.thrust;
       this.velY += Math.sin(this.angle) * this.thrust;
     }
@@ -187,6 +285,40 @@ class Ship {
         ctx.stroke();
       }
     }
+
+    if (shieldHp > 0) {
+      const shieldStrength = shieldHp / shieldMaxHp;
+      const breath = Math.sin(shieldBreath) * 2.5;
+      const shieldRadius = this.radius + 11 + breath + shieldHitPulse * 0.2;
+
+
+      ctx.strokeStyle = shieldStrength < 0.35 ? "rgba(130, 220, 255, 0.65)" : "rgba(140, 230, 255, 0.95)";
+      ctx.lineWidth = 3 + shieldHitPulse * 0.08;
+      ctx.shadowColor = "rgba(130, 220, 255, 0.95)";
+      ctx.shadowBlur = 18 + shieldHitPulse;
+      ctx.beginPath();
+      ctx.arc(0, 0, shieldRadius, 0, TWO_PI);
+      ctx.stroke();
+
+      ctx.shadowBlur = 0;
+
+      if (shieldStrength < 0.55) {
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.7)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(-8, -shieldRadius + 8);
+        ctx.lineTo(-2, -3);
+        ctx.lineTo(4, 6);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(shieldRadius - 10, -4);
+        ctx.lineTo(5, 2);
+        ctx.lineTo(0, 10);
+        ctx.stroke();
+      }
+    }
+
     ctx.restore();
   }
 
@@ -249,6 +381,9 @@ class Ship {
     this.fireAngle(this.angle);
   }
 }
+/* ===========================
+      SECTION: POWERUPS
+   =========================== */
 
 class Powerup {
   constructor(type) {
@@ -270,8 +405,8 @@ class Powerup {
 
     this.life--;
 
-    this.vx *= 0.98;
-    this.vy *= 0.98;
+    this.vx *= 0.99;
+    this.vy *= 0.99;
 
     // Wrap around screen
     if (this.x < -this.radius) this.x = canvas.width + this.radius;
@@ -281,7 +416,15 @@ class Powerup {
   }
 
   draw() {
-    ctx.fillStyle = "rgb(180, 100, 30)";
+    const colors = {
+      spread: "rgb(255, 170, 70)",
+      double: "rgb(255, 90, 90)",
+      pierce: "rgb(220, 120, 255)",
+      ricochet: "rgb(255, 235, 90)",
+      shield: "rgb(110, 210, 255)"
+    };
+
+    ctx.fillStyle = colors[this.type] || "rgb(180, 100, 30)";
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, TWO_PI);
     ctx.fill();
@@ -335,6 +478,67 @@ class Bullet {
     ctx.fill();
   }
 }
+/* ===========================
+      SECTION: TORPEDO SYSTEM
+   =========================== */
+class Torpedo {
+  constructor(x, y, angle) {
+    this.x = x;
+    this.y = y;
+    this.angle = angle;
+    this.speed = 8;
+    this.life = 120;
+  }
+
+  update() {
+    this.x += Math.cos(this.angle) * this.speed;
+    this.y += Math.sin(this.angle) * this.speed;
+    this.life--;
+
+    // --- PLASMA TRAIL ---
+    for (let i = 0; i < 2; i++) {
+      const angle = this.angle + Math.PI + (Math.random() * 0.4 - 0.2);
+      const speed = Math.random() * 1.2 + 0.4;
+      const life = Math.random() * 18 + 12;
+
+      particles.push(new Particle(
+        this.x - Math.cos(this.angle) * 8,
+        this.y - Math.sin(this.angle) * 8,
+        angle,
+        speed,
+        life,
+        "rgba(120,255,120,0.9)"
+      ));
+    }
+
+    // --- SCREEN WRAP ---
+    if (this.x < 0) this.x += canvas.width;
+    if (this.x > canvas.width) this.x -= canvas.width;
+    if (this.y < 0) this.y += canvas.height;
+    if (this.y > canvas.height) this.y -= canvas.height;
+}
+
+
+  draw() {
+    ctx.save();
+    ctx.strokeStyle = "lime";
+    ctx.lineWidth = 3;
+    ctx.shadowColor = "rgba(140, 255, 140, 0.9)";
+    ctx.shadowBlur = 12;
+    ctx.beginPath();
+    ctx.moveTo(this.x, this.y);
+    ctx.lineTo(
+      this.x - Math.cos(this.angle) * 10,
+      this.y - Math.sin(this.angle) * 10
+    );
+    ctx.fillStyle = "rgba(180,255,180,0.8)";
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, 4, 0, TWO_PI);
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+  }
+}
 
 // ---== ASTEROID ==---
 class Asteroid {
@@ -343,7 +547,7 @@ class Asteroid {
     this.y = y;
     this.radius = radius;
     const angle = Math.random() * TWO_PI;
-    const speed = 1 + Math.random() * 1.5;
+    const speed = 1 + Math.random() * 1.1;
     this.vx = Math.cos(angle) * speed;
     this.vy = Math.sin(angle) * speed;
     this.vertices = [];
@@ -416,6 +620,7 @@ class Particle {
     this.y += this.vy;
     this.life--;
     this.radius *= 0.96;
+    this.color = this.color.replace(/0\.9|1\)/, `${this.life / 30})`);
   }
 
   draw() {
@@ -443,8 +648,19 @@ let powerupSpawnCooldown = 0;
 let powerups = [];
 let activePowerup = null;
 let powerupTimer = 0;
-
-
+let torpedo = null;
+let torpedoCooldown = 0;
+let torpedoCooldownMax = 240; 
+let shieldHp = 0;
+let shieldMaxHp = 0;
+let shieldHitPulse = 0;
+let shieldBreath = 0;
+let flashTime = 0;
+let flashMaxTime = 0;
+let flashColor = "255,255,255";
+let lifeCounterPulse = 0;
+let lifeCounterX = 20; 
+let lifeCounterY = 20;
 
 // ==---== CORE GAME FUNCTIONS ==---==
 function drawSplashScreen() {
@@ -496,10 +712,11 @@ function drawSplashScreen() {
   ctx.fillText("V      -  THRUST", leftX, canvas.height / 2 + 50);
   ctx.fillText("R      -  180 FLIP", leftX, canvas.height / 2 + 80);
   ctx.fillText("F      -  FIRE", leftX, canvas.height / 2 + 110);
-  ctx.fillText("P      -  PAUSE", leftX, canvas.height / 2 + 140);
+  ctx.fillText("B      -  TORPEDO", leftX, canvas.height / 2 + 140);
+  ctx.fillText("P      -  PAUSE", leftX, canvas.height / 2 + 170);
   ctx.textAlign = "center";
   ctx.font = "bold 24px Courier New";
-  ctx.fillText("PRESS ENTER TO START", canvas.width / 2, canvas.height / 2 + 190);
+  ctx.fillText("PRESS ENTER TO START", canvas.width / 2, canvas.height / 2 + 220);
 }
 function spawnAsteroids(count) {
   for (let i = 0; i < count; i++) {
@@ -526,7 +743,7 @@ function splitAsteroid(ast, index) {
 
   for (let i = 0; i < 20; i++) {
     const angle = Math.random() * TWO_PI;
-    const speed = Math.random() * 3 + 1;
+    const speed = Math.random() * 1 + 2;
     const life = Math.random() * 30 + 20;
     const color = asteroidColor(ast.radius);
     particles.push(new Particle(ast.x, ast.y, angle, speed, life, color));
@@ -543,7 +760,125 @@ function splitAsteroid(ast, index) {
   asteroids.push(new Asteroid(ast.x, ast.y, newRadius));
 }
 
+function spawnLifeParticles(x, y) {
+  for (let i = 0; i < 20; i++) {
+    const angle = Math.random() * TWO_PI;
+    const speed = Math.random() * 2 + 0.5;
+    const life = Math.random() * 20 + 20;
+    const color = "yellow";
+
+    particles.push(new Particle(x, y, angle, speed, life, color));
+  }
+}
+
+function triggerFlash(color, frames) {
+  flashColor = color;
+  flashTime = frames;
+  flashMaxTime = frames;
+}
+
+function activatePowerup(type) {
+  activePowerup = type;
+
+  if (type === "shield") {
+    shieldMaxHp = 100;
+    shieldHp = shieldMaxHp;
+    shieldHitPulse = 12;
+    triggerFlash("120,200,255", 8);
+    return; // DO NOT TOUCH activePowerup
+  }
+
+  activePowerup = type; // only for weapon powerups
+  powerupTimer = 900;
+}
+/* ===========================
+      SECTION: SHIELD SYSTEM
+   =========================== */
+
+function spawnShieldSparks(x, y, count = 14) {
+  for (let i = 0; i < count; i++) {
+    const angle = Math.random() * TWO_PI;
+    const speed = Math.random() * 3 + 1.5;
+    const life = Math.random() * 25 + 20;
+    const color = Math.random() > 0.5 ? "#9fe7ff" : "white";
+    particles.push(new Particle(x, y, angle, speed, life, color));
+  }
+}
+
+function breakShield() {
+  shieldHp = 0;
+  shieldMaxHp = 0;
+  shieldHitPulse = 18;
+  shakeTime = Math.max(shakeTime, 18);
+  triggerFlash("180,230,255", 12);
+  play(SFX.expMed, 0.6);
+  spawnShieldSparks(ship.x, ship.y, 34);
+}
+
+function damageShield(amount, x, y) {
+  shieldHp = Math.max(0, shieldHp - amount);
+  shieldHitPulse = 14;
+  score += 20;
+  triggerFlash("110,190,255", 5);
+  spawnShieldSparks(x, y);
+
+  if (shieldHp <= 0) {
+    breakShield();
+  }
+}
+
+function fizzleTorpedo(x, y) {
+  triggerFlash("140,255,140", 4);
+  for (let i = 0; i < 12; i++) {
+    const angle = Math.random() * TWO_PI;
+    const speed = Math.random() * 2 + 0.5;
+    const life = Math.random() * 18 + 10;
+    particles.push(new Particle(x, y, angle, speed, life, "lime"));
+  }
+}
+
+function destroyAsteroidCompletely(index, points) {
+  const ast = asteroids[index];
+  if (!ast) return;
+
+  score += points;
+
+  for (let i = 0; i < 16; i++) {
+    const angle = Math.random() * TWO_PI;
+    const speed = Math.random() * 4 + 1.5;
+    const life = Math.random() * 30 + 20;
+    particles.push(new Particle(ast.x, ast.y, angle, speed, life, asteroidColor(ast.radius)));
+  }
+
+  asteroids.splice(index, 1);
+}
+
+function detonateTorpedo(x, y) {
+  shakeTime = 40;
+  play(SFX.bigBoom, 1.0);
+  triggerFlash("170,255,170", 14);
+
+  const blastRadius = 3 * 40;
+
+  for (let i = asteroids.length - 1; i >= 0; i--) {
+    const dx = asteroids[i].x - x;
+    const dy = asteroids[i].y - y;
+    if (dx * dx + dy * dy < blastRadius * blastRadius) {
+      destroyAsteroidCompletely(i, 100);
+    }
+  }
+
+  for (let i = 0; i < 80; i++) {
+    const angle = Math.random() * TWO_PI;
+    const speed = Math.random() * 5 + 2;
+    const life = Math.random() * 60 + 40;
+    particles.push(new Particle(x, y, angle, speed, life, "lime"));
+  }
+}
+
 function killShip() {
+  if (shieldHp > 0) return;
+
   lives--;
   shakeTime = 60;
   play(SFX.expBig, 0.9);
@@ -574,6 +909,7 @@ function killShip() {
 
 function restartGame() {
   score = 0;
+  level = 1;
   lives = 3;
   gameOver = false;
   bullets = [];
@@ -583,26 +919,56 @@ function restartGame() {
   ship.y = canvas.height / 2;
   ship.velX = 0;
   ship.velY = 0;
-  spawnAsteroids(5);
+  ship.invincible = 0;
+  activePowerup = null;
+  powerupTimer = 0;
+  torpedo = null;
+  shieldHp = 0;
+  shieldMaxHp = 0;
+  shieldHitPulse = 0;
+  flashTime = 0;
+  flashMaxTime = 0;
+  powerups = [];
+  powerupSpawnCooldown = 0;
+  showSplash = true;
+  SFX.boost.pause();
+  SFX.boost.currentTime = 0;
+  //SFX.splashScreen.currentTime = 0;
+  //SFX.splashScreen.play().catch(() => {});
+  spawnAsteroids(3);
 }
-
-// ==---== MAIN LOOP ==---==
+/* ===========================
+      SECTION: MAIN UPDATE LOOP
+   =========================== */
 function update() {
   if (showSplash) {
+    if (SFX.splashScreen.paused) {
+      SFX.splashScreen.play().catch(() => {});
+    }
     return; // Keep the splash screen static until the player starts
   }
 
   if (gameOver || paused) {
-    // If the game stops, make sure the engine sound stops too!
+    // allow screen effects to settle
+    if (shakeTime > 0) shakeTime--;
+    if (flashTime > 0) flashTime--;
+    if (gameOver) torpedo = null;
     SFX.boost.pause();
     return;
   }
+
+  if (torpedoCooldown > 0) torpedoCooldown--;
+  if (flashTime > 0) flashTime--;
+  if (shieldHitPulse > 0) shieldHitPulse--;
+  shieldBreath += 0.05;
+
+  updateStarfield();
 
   if (powerupSpawnCooldown > 0) {
     powerupSpawnCooldown--;
   } else {
     if (Math.random() < 0.002) {
-      const types = ["ricochet", "spread", "pierce", "double"];
+      const types = ["ricochet", "spread", "pierce", "double", "shield"];
       const pick = types[Math.floor(Math.random() * types.length)];
       powerups.push(new Powerup(pick));
       powerupSpawnCooldown = 300; // 5 seconds at 60fps
@@ -632,10 +998,31 @@ function update() {
   asteroids.forEach(a => a.update());
   particles.forEach(p => p.update());
   powerups.forEach(p => p.update());
+
+  if (torpedo) {
+    torpedo.update();
+    if (torpedo.life <= 0) {
+      fizzleTorpedo(torpedo.x, torpedo.y);
+      torpedo = null;
+    }
+  }
+
   bullets = bullets.filter(b => b.life > 0);
   particles = particles.filter(p => p.life > 0);
 
   for (let i = asteroids.length - 1; i >= 0; i--) {
+    if (torpedo) {
+      const dx = asteroids[i].x - torpedo.x;
+      const dy = asteroids[i].y - torpedo.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist < asteroids[i].radius) {
+        detonateTorpedo(torpedo.x, torpedo.y);
+        torpedo = null;
+        break;
+      }
+    }
+
     for (let j = bullets.length - 1; j >= 0; j--) {
       if (circleCollide(asteroids[i], bullets[j])) {
         const bullet = bullets[j];
@@ -706,8 +1093,7 @@ function update() {
     const p = powerups[i];
 
     if (circleCollide(p, ship)) {
-      activePowerup = p.type;
-      powerupTimer = 600; // 10 seconds of power
+      activatePowerup(p.type);
       powerups.splice(i, 1);
       break;
     }
@@ -715,18 +1101,33 @@ function update() {
     if (p.life <= 0) powerups.splice(i, 1);
   }
 
-  for (let i = 0; i < asteroids.length; i++) {
-    if (circleCollide(asteroids[i], ship) && ship.invincible <= 0) {
-      killShip();
-      break;
+  for (let i = asteroids.length - 1; i >= 0; i--) {
+    if (!circleCollide(asteroids[i], ship) || ship.invincible > 0) continue;
+
+    if (shieldHp > 0) {
+      const damage = asteroids[i].radius > 30 ? 34 : (asteroids[i].radius > 15 ? 22 : 12);
+      damageShield(damage, asteroids[i].x, asteroids[i].y);
+      splitAsteroid(asteroids[i], i);
+      continue;
     }
+
+    killShip();
+    break;
   }
 
   if (asteroids.length === 0 && !gameOver) {
     level++;
-    spawnAsteroids(5 + level); // Adds one extra asteroid per level
+
+    if (level > 1 && (level - 1) % 2 === 0) {
+      giveExtraLife();
+    }
+    spawnAsteroids(3 + level);
   }
 }
+
+/* ===========================
+      SECTION: DRAW LOOP
+   =========================== */
 
 function draw() {
   ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -737,6 +1138,8 @@ function draw() {
     return;
   }
 
+  drawStarfield();
+
   ctx.save(); 
   if (shakeTime > 0) {
     const dx = Math.random() * 6 - 3;
@@ -746,6 +1149,7 @@ function draw() {
   }
 
   ship.draw();
+  if (torpedo) torpedo.draw();
   bullets.forEach(b => b.draw());
   asteroids.forEach(a => a.draw());
   particles.forEach(p => p.draw());
@@ -774,8 +1178,21 @@ function draw() {
   ctx.fillText("[Left / Right] TURN", canvas.width - 20, 75);
   ctx.fillText("[R] 180 FLIP", canvas.width - 20, 95);
   ctx.fillText("[F] FIRE", canvas.width - 20, 115);
-  ctx.fillText("[P] PAUSE", canvas.width - 20, 135);
+  ctx.fillText("[B] TORPEDO", canvas.width - 20, 135);
+  ctx.fillText("[P] PAUSE", canvas.width - 20, 155);
 
+  // Torpedo Cooldown Bar
+  if (torpedoCooldown > 0) {
+    const pct = 1 - (torpedoCooldown / torpedoCooldownMax);
+    ctx.fillStyle = "lime";
+    ctx.fillRect(canvas.width - 150, canvas.height - 30, 120 * pct, 8);
+    ctx.strokeStyle = "white";
+    ctx.strokeRect(canvas.width - 150, canvas.height - 30, 120, 8);
+  } else {
+    ctx.fillStyle = "lime";
+    ctx.font = "14px Courier New";
+    ctx.fillText("TORPEDO READY", canvas.width - 90, canvas.height - 35);
+   }
 
   // Update High Score Logic
   if (score > highScore) {
@@ -784,18 +1201,17 @@ function draw() {
   }
 
   // ---== SCREENS (PAUSE / GAME OVER) ==---
-  
+  ctx.textAlign = "center";
 
   if (gameOver) {
-    ctx.textAlign = "center";
     ctx.fillStyle = "red";
-    ctx.font = "bold 40px 'Courier New', monospace";
+    ctx.font = "40px Courier New";
     ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
-    ctx.font = "20px 'Courier New', monospace";
+    ctx.font = "20px Courier New";
     ctx.fillText("Press ENTER to restart", canvas.width / 2, canvas.height / 2 + 40);
   } else if (paused) {
     ctx.fillStyle = "yellow";
-    ctx.font = "bold 40px 'Courier New', monospace";
+    ctx.font = "40px Courier New";
     ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2);
     
     ctx.fillStyle = "cyan";
@@ -806,10 +1222,26 @@ function draw() {
   if (activePowerup) {
     ctx.fillStyle = "cyan";
     ctx.font = "18px Courier New";
-    ctx.fillText(`POWER: ${activePowerup.toUpperCase()} (${Math.ceil(powerupTimer/60)})`,
-                 canvas.width/2, 40);
+    if (activePowerup === "shield") {
+      ctx.fillText(`SHIELD: ${shieldHp}/${shieldMaxHp}`, canvas.width / 2, 40);
+    } else {
+      ctx.fillText(`POWER: ${activePowerup.toUpperCase()} (${Math.ceil(powerupTimer/60)})`,
+                   canvas.width / 2, 40);
+    }
   }
 
+  if (flashTime > 0 && flashMaxTime > 0) {
+    ctx.fillStyle = `rgba(${flashColor}, ${0.35 * (flashTime / flashMaxTime)})`;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+}
+
+function giveExtraLife() {
+    lives++;
+    play(SFX.extraLife, 0.5);
+    spawnLifeParticles(lifeCounterX, lifeCounterY);
+    lifeCounterPulse = 10;
 }
 
 function loop() {
@@ -819,7 +1251,8 @@ function loop() {
 }
 
 // ==---== START GAME ==---==
-spawnAsteroids(5);
+initStarfield();
+spawnAsteroids(3);
 loop();
 
 </script>
