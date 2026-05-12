@@ -1,6 +1,6 @@
 # 🚀 Asteroids: Ship PowerUps Edition
 
-A polished, high-octane reimagining of the classic arcade shooter, built from the ground up in Vanilla JavaScript. This version introduces a metallic-themed UI, an ergonomic control scheme, and dynamic ship upgrades.
+A polished, high-octane reimagining of the classic arcade shooter. Navigate through a dangerous asteroid field, collect powerful weapon upgrades, and deploy tactical shields and torpedoes to survive the cosmic chaos. Built from the ground up in Vanilla JavaScript. This version introduces a metallic-themed UI, an ergonomic control scheme, and dynamic ship upgrades, pulsating shield, plasma torpedoes, and none stop action.
 
 ## 🕹️ [Live Demo](https://grantruffner16301.github.io/GrantRuffner/Asteroid_JavaScript/)
 
@@ -15,7 +15,12 @@ A polished, high-octane reimagining of the classic arcade shooter, built from th
     * **Double:** High-density parallel rounds.
     * **Pierce:** Kinetic slugs that travel through multiple targets.
     * **Ricochet:** Tracking projectiles that seek the nearest threat upon impact.
+    * **Shield:** Protects your hull from collisions with a regenerating energy barrier.
 * **Persistent High Scores:** Integrated local storage to track and save your all-time records.
+* **Tactical Weaponry:** Deploy high-yield **Torpedoes** that clear large areas with a massive plasma blast.
+* **Responsive Physics:** Experience smooth ship handling with momentum-based movement and screen-wrapping mechanics.
+* **Procedural Visuals:** Features a shimmering starfield, screen-shake effects, and a metallic title interface.
+* **Audio Immersion:** A full suite of sound effects for lasers, explosions, engine boosts, and game state changes.
 * **MacBook Optimized:** Custom ergonomic control scheme designed specifically for modern laptop keyboards.
 
 ---
@@ -27,6 +32,7 @@ A polished, high-octane reimagining of the classic arcade shooter, built from th
 | **Thrust (Engine)** | `V` |
 | **Rotate Ship** | `Left / Right Arrows` |
 | **Instant 180° Flip** | `R` |
+| **Launch Torpedo** | `B` |
 | **Fire Lasers** | `F` |
 | **Pause / Resume** | `P` |
 | **Restart Game** | `Enter` (on Game Over screen) |
@@ -37,6 +43,20 @@ A polished, high-octane reimagining of the classic arcade shooter, built from th
 * **Zero Dependencies:** Written in 100% Vanilla JavaScript. No game engines or libraries (like Phaser or PixiJS) were used.
 * **Canvas API:** Hand-coded rendering loop for high-performance vector-style graphics.
 * **Custom Audio Engine:** Implemented a non-blocking audio trigger system to allow overlapping sound effects (explosions, lasers, and engine hum) without lag.
+
+---
+
+📦 **Installation**
+1. Clone the repository:
+ **bash**
+   git clone https://github.com
+Use code with caution.
+2. Open index.html in any modern web browser.
+3. Ensure the sounds/ directory is present to enable the full audio experience.
+
+---
+
+* **Created by Grant Ruffner**
 
 ---
 
