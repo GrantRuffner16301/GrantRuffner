@@ -45,14 +45,14 @@ A fast-paced, 100% dependency-free Vanilla JavaScript arcade shooter built on th
 
 | Cosmic Debris & Combat | Power-Up Overdrive |
 | :---: | :---: |
-| ![Gameplay Encounter](Asteroid_JavaScript/assets/asteriods1.png) | ![Shields & Upgrades](Asteroid_JavaScript/assets/asteroids2.png) |
+| ![Gameplay Encounter](Asteroid_JavaScript/assets/asteriod1.png) | ![Shields & Upgrades](Asteroid_JavaScript/assets/asteroid2.png) |
 
 * **Weapon Overdrive Modifiers:** Intercept floating kinetic orbs to instantly cycle between heavy weapon profiles including Spread, Double, Pierce, and Ricochet fire.
 * **60 FPS Canvas Loop:** Powered entirely by native `requestAnimationFrame` handling custom bounding-circle collision vectors and smooth screen-wrapping.
 * **Asynchronous Web Audio:** Utilizes an overlapping multi-channel audio trigger system to play concurrent explosion and laser sound effects without causing execution lag.
 * **Persistent Leaderboard:** Automatically tracks, updates, and preserves personal high scores across browser sessions using the local storage API.
 
-### Modern Analog Clock for macOS - File: [modern_clock2.py](modern_analog_clock/modern_clock2.py_)
+### Modern Analog Clock for macOS - File: [modern_clock2.py](modern_analog_clock/modern_clock2.py)
 A sleek, high-performance analog clock built with Python and PyQt6. Designed specifically to complement the aesthetic of the MacBook Air M4, this application functions as a lightweight desktop widget with a focus on customization and transparency.
    - Frameless & Minimalist: A clean, round-edge design that floats on the desktop.
    - Dynamic Customization: Toggle minute marks and adjust opacity (20%–100%) via a right-click context menu.
