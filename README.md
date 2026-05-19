@@ -70,7 +70,7 @@ A custom-built, end-to-end library management solution designed to turn a home b
   - Persistence & UUIDs: Employs uuid for unique tracking and JSON/SQLite for data integrity.
   - Dynamic UI/UX: Features a "Scan Station" with live camera overlays and asynchronous status updates.
 
-### Arduino Smart Bike Tail Light System - FILE:[Bike_Tail_Lights.ino](Bike_tail_lights/Bike_Tail_Lights.ino)
+### Arduino Smart Bike Tail Light System - FILE: [Bike_Tail_Lights.ino](Bike_tail_lights/Bike_Tail_Lights.ino)
 This pull request introduces a feature-rich tail light system for bicycles using WS2812B LEDs and an I2C OLED Status Display. It provides real-time signaling for braking and turning, along with a cockpit display for the rider.
 #### Core Features
   - Dynamic Braking: LEDs turn bright red when the brake lever is squeezed (using a normally closed button logic).
