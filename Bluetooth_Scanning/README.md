@@ -1,11 +1,19 @@
 
-# Deep Forest Bluetooth Inspector
+# Deep Forest Bluetooth Scanner
 
 A high-contrast, deep-green themed **Bluetooth Low Energy (BLE)** desktop application built with Python, PyQt6, and Bleak. It allows users to scan for nearby BLE devices in real-time, monitor signal strengths (RSSI) via a live moving-average graph, inspect GATT services/characteristics, and export historical RSSI logs to a CSV file.
 
 ![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
 ![PyQt6](https://img.shields.io/badge/Framework-PyQt6-green.svg)
 ![Bleak](https://img.shields.io/badge/BLE-Bleak-lightblue.svg)
+
+---
+
+## 📸 Screenshots
+
+| Device Discovery & Scan | Signal Inspection & GATT Services |
+| :---: | :---: |
+| ![Scan Interface](assets/bluetooth_scanner1.png) | ![GATT Inspector](assets/bluetooth_scanner2.png) |
 
 ---
 
