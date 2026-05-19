@@ -39,14 +39,10 @@ I work iteratively: experiment, identify errors, self-correct, and understand wh
 Perfect practice beats repetition. Practicing something incorrectly only reinforces bad habits — I prioritize correct fundamentals, clean logic, and solid foundations.
 
 ## Feature projects
+
 ### 🚀 Asteroids: Ship PowerUps Edition - File: [index.html](Asteroid_JavaScript/index.html)
-
 A fast-paced, 100% dependency-free Vanilla JavaScript arcade shooter built on the HTML5 Canvas API, featuring smooth momentum-based drift physics, particle systems, and dynamic ship modifications.
-
-| Cosmic Debris & Combat | Power-Up Overdrive |
-| :---: | :---: |
-| ![Gameplay Encounter](Asteroid_JavaScript/assets/asteriod1.png) | ![Shields & Upgrades](Asteroid_JavaScript/assets/asteroid2.png) |
-
+## 🕹️ [Live Demo](https://grantruffner16301.github.io/GrantRuffner/Asteroid_JavaScript/)
 * **Weapon Overdrive Modifiers:** Intercept floating kinetic orbs to instantly cycle between heavy weapon profiles including Spread, Double, Pierce, and Ricochet fire.
 * **60 FPS Canvas Loop:** Powered entirely by native `requestAnimationFrame` handling custom bounding-circle collision vectors and smooth screen-wrapping.
 * **Asynchronous Web Audio:** Utilizes an overlapping multi-channel audio trigger system to play concurrent explosion and laser sound effects without causing execution lag.
@@ -67,14 +63,14 @@ A technical demonstration of color theory implementation in Python. This project
   - Advanced Logic: Features a "Double-Click to Clear" safety and "Shift-to-Subtract" mechanics to prevent accidental loss of progress during complex mixing.
   - Subtractive Color Model: A custom Red, Yellow, Blue color math engine providing a more natural artistic pigment blending.
 
-### Amber’s Home Library System - File: Ambers_Library_System.py
+### Amber’s Home Library System - File: [Ambers_Library_System.py](Ambers_Home_Library/Ambers_Library_System.py)
 A custom-built, end-to-end library management solution designed to turn a home book collection into a professional-grade lending library. Developed as a gift, this system automates the entire lifecycle of a book loan—from inventory entry to QR-coded checkout. This robust CRUD application demonstrating the integration of computer vision, database management, and PDF generation.
   - Database: Utilizes SQLite3 with foreign key constraints to manage books, members, and active loan history.
   - Computer Vision: Implements cv2.QRCodeDetector for real-time barcode processing and session management.
   - Persistence & UUIDs: Employs uuid for unique tracking and JSON/SQLite for data integrity.
   - Dynamic UI/UX: Features a "Scan Station" with live camera overlays and asynchronous status updates.
 
-### Arduino Smart Bike Tail Light System - FILE: BIKE_LIGHTS.INO
+### Arduino Smart Bike Tail Light System - FILE:[Bike_Tail_Lights.ino](Bike_tail_lights/Bike_Tail_Lights.ino)
 This pull request introduces a feature-rich tail light system for bicycles using WS2812B LEDs and an I2C OLED Status Display. It provides real-time signaling for braking and turning, along with a cockpit display for the rider.
 #### Core Features
   - Dynamic Braking: LEDs turn bright red when the brake lever is squeezed (using a normally closed button logic).
