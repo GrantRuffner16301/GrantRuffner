@@ -56,7 +56,7 @@ A sleek, high-performance analog clock built with Python and PyQt6. Designed spe
    - Always-on-Top: Designed to stay visible while you work without interfering with window focus.
    - Adaptive Contrast: This ensures the numbers remain readable regardless of the chosen background theme.
 
-### Grant’s Primary Color Mixing Lab for MacOS - File: color_paint_mixer.py
+### Grant’s Primary Color Mixing Lab for MacOS - File: [color_paint_mixer.py](Paint_Color_Mixer/paint_color_mixer.py)
 A technical demonstration of color theory implementation in Python. This project focuses on the mathematical conversion between subtractive color mixing (paint) and additive digital displays (RGB). Unlike standard RGB sliders, this tool uses Red, Yellow, and Blue (RYB) logic to let users mix "paint" more intuitively.
   - Data Persistence: Implements a robust json save/load system for user-generated Digital Pigment Library data.
   - Interactive Graphics: Leverages Pygame for high-refresh-rate UI updates and smooth scrollable sidebars.
