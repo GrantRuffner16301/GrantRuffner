@@ -39,7 +39,18 @@ I work iteratively: experiment, identify errors, self-correct, and understand wh
 Perfect practice beats repetition. Practicing something incorrectly only reinforces bad habits — I prioritize correct fundamentals, clean logic, and solid foundations.
 
 ## Feature projects
-I am still working on uploading photos and Readme's for this area. More to be added. 
+### 🚀 Asteroids: Ship PowerUps Edition - File: [index.html](Asteroid_JavaScript/index.html)
+
+A fast-paced, 100% dependency-free Vanilla JavaScript arcade shooter built on the HTML5 Canvas API, featuring smooth momentum-based drift physics, particle systems, and dynamic ship modifications.
+
+| Cosmic Debris & Combat | Power-Up Overdrive |
+| :---: | :---: |
+| ![Gameplay Encounter](Asteroid_JavaScript/assets/screenshot1.png) | ![Shields & Upgrades](Asteroid_JavaScript/assets/screenshot2.png) |
+
+* **Weapon Overdrive Modifiers:** Intercept floating kinetic orbs to instantly cycle between heavy weapon profiles including Spread, Double, Pierce, and Ricochet fire.
+* **60 FPS Canvas Loop:** Powered entirely by native `requestAnimationFrame` handling custom bounding-circle collision vectors and smooth screen-wrapping.
+* **Asynchronous Web Audio:** Utilizes an overlapping multi-channel audio trigger system to play concurrent explosion and laser sound effects without causing execution lag.
+* **Persistent Leaderboard:** Automatically tracks, updates, and preserves personal high scores across browser sessions using the local storage API.
 
 ### Modern Analog Clock for macOS - File: Modern_Clock2.py
 A sleek, high-performance analog clock built with Python and PyQt6. Designed specifically to complement the aesthetic of the MacBook Air M4, this application functions as a lightweight desktop widget with a focus on customization and transparency.
