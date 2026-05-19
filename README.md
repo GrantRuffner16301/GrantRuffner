@@ -7,7 +7,7 @@ Engineering to formalize and expand a lifelong foundation in computing, radio
 communications, and microcontroller development. Known for reliability,
 problem-solving, and delivering results in fast-paced environments.
 
-## About me
+## A Little About me
 - 🔭 Current study: AAS in AI Software Engineering — Maestro College
 - 🎯 Career goal: Complete the AAS, build a strong project portfolio, continue to a BS in Computer Science, and move into a professional software or AI-adjacent role.
 - 📍 Location: Oil City, Pennsylvania
@@ -30,7 +30,7 @@ problem-solving, and delivering results in fast-paced environments.
 ### Soft Skills:
 - Troubleshooting, Training, Leadership, Reliability, Adaptability
   
-Most of my projects use Python, some for Arduino in (C++). There might be two versions one for MacOS and another for WindowsOS. More will be added IM Going to be setting this up better. Check back for updates.
+Most of my projects use Python, some for Arduino in (C++), and JavaScript. There might be two versions of the same code, one for MacOS and another for WindowsOS. I have most of them clearly marked. But check to make sure you have the right one some will work on both either way.
 
 ## Problem-solving style
 I work iteratively: experiment, identify errors, self-correct, and understand why something failed before fixing it. I value deep understanding and reasoning-based explanations over quick fixes.
