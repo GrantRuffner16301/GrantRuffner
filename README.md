@@ -45,7 +45,7 @@ A fast-paced, 100% dependency-free Vanilla JavaScript arcade shooter built on th
 
 | Cosmic Debris & Combat | Power-Up Overdrive |
 | :---: | :---: |
-| ![Gameplay Encounter](Asteroid_JavaScript/assets/screenshot1.png) | ![Shields & Upgrades](Asteroid_JavaScript/assets/screenshot2.png) |
+| ![Gameplay Encounter](Asteroid_JavaScript/assets/asteriods1.png) | ![Shields & Upgrades](Asteroid_JavaScript/assets/asteroids2.png) |
 
 * **Weapon Overdrive Modifiers:** Intercept floating kinetic orbs to instantly cycle between heavy weapon profiles including Spread, Double, Pierce, and Ricochet fire.
 * **60 FPS Canvas Loop:** Powered entirely by native `requestAnimationFrame` handling custom bounding-circle collision vectors and smooth screen-wrapping.
