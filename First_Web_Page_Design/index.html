@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My First Styles Designed Webpage</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #0a0f1f; 
+    color: #e0e0e0;
+  }
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    linear-gradient(#1220df 2px, transparent 3px),
+    linear-gradient(90deg, #1220df 2px, transparent 3px);
+  background-size: 35px 35px;
+  opacity: 0.20; 
+}
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  background:
+  radial-gradient(circle at center, rgba(255, 60, 60, 0.1), transparent 100%);
+}
+body::before {
+  animation: gridMove 10s linear infinite;
+}
+
+@keyframes gridMove {
+  from { background-position: 0 0, 0 0; }
+  to   { background-position: 0 35px, 35px 0; }
+}
+  
+  header {
+    background: linear-gradient(135deg, #003b99, #0066ff);
+    color: white;
+    padding: 25px;
+    text-align: center;
+    text-shadow: 0 0 8px #ff0033; 
+    border-bottom: 3px solid #ff0033; 
+  }
+
+  nav {
+    background: #111827; 
+    padding: 12px;
+    border-bottom: 2px solid #0066ff; 
+  }
+
+  nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 25px;
+  }
+
+  nav a {
+    color: #ff0033; 
+    text-decoration: none;
+    font-weight: bold;
+    text-shadow: 0 0 6px #ff0033;
+  }
+
+  nav a:hover {
+    color: #ffffff;
+    text-shadow: 0 0 10px #0066ff;
+  }
+
+  main {
+    padding: 25px;
+    max-width: 900px;
+    margin: 30px auto;
+    background: #1a2333; 
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 102, 255, 0.4); 
+    border: 1px solid #003b99;
+  }
+
+  section {
+    margin-bottom: 35px;
+  }
+
+  section h2 {
+    color: #ff0033;
+    text-shadow: 0 0 8px #ff0033;
+  }
+
+  footer {
+    background: linear-gradient(135deg, #003b99, #0066ff);
+    color: white;
+    text-align: center;
+    padding: 18px;
+    margin-top: 40px;
+    border-top: 3px solid #ff0033;
+    text-shadow: 0 0 8px #ff0033;
+  }
+</style>
+</head>
+<body>
+
+  <header>
+    <h1>Grant’s Awesome WebSite</h1>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main>
+
+    <section id="home">
+      <h2>Home</h2>
+      <p>Welcome to the site. This is the intro section.</p>
+    </section>
+
+    <section id="projects">
+      <h2>Projects</h2>
+      <p>Here’s where the cool stuff goes.</p>
+    </section>
+
+    <section id="contact">
+      <h2>Contact</h2>
+      <p>Reach out anytime.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>© 2026 Grant Ruffner</p>
+  </footer>
+
+</body>
+</html>
