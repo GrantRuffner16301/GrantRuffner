@@ -21,7 +21,7 @@ problem-solving, and delivering results in fast-paced environments.
 
 ## Technical experience (self-taught + coursework)
 ### Programming:
-- Python, JavaScript, C++ (Arduino), Visual Basic, Kotlin
+- Python, JavaScript, HTML, C++ (Arduino), Visual Basic, Kotlin
 - Tools and Technologies: Git, GitKraken, Arduino IDE, Windows OS, Circuit Schematics
 - 
 ### Core Competencies: 
