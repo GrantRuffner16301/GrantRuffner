@@ -1,36 +1,36 @@
-``` Create & activate a virtual environment
-macOS / Linux: python3 -m venv .venv source .venv/bin/activate
-Windows (PowerShell): python -m venv .venv .venv\Scripts\Activate.ps1
-Install dependencies pip install --upgrade pip pip install -r Cricut_Expressions/requirements.txt
+# Create & activate a virtual environment
+# macOS / Linux: python3 -m venv .venv source .venv/bin/activate
+# Windows (PowerShell): python -m venv .venv .venv\Scripts\Activate.ps1
+# Install dependencies pip install --upgrade pip pip install -r Cricut_Expressions/requirements.txt
 
-Run the app
-macOS / Linux: python3 Cricut_Expressions/my_cricut.py
-Windows: python Cricut_Expressions\my_cricut.py
+# Run the app
+# macOS / Linux: python3 Cricut_Expressions/my_cricut.py
+# Windows: python Cricut_Expressions\my_cricut.py
 
-Important platform notes
+# Important platform notes
 
-MacOS:
-The app uses AppleScript (osascript) for native file dialogs; 
-you may need to grant Terminal / your Python launcher 
-Automation or Accessibility permissions in 
-System Settings → Privacy & Security for native dialogs 
-to work without falling back to Tk dialogs.
-If the Cricut device doesn’t appear, you may need FTDI VCP drivers (check FTDI site). 
+# MacOS:
+# The app uses AppleScript (osascript) for native file dialogs; 
+# you may need to grant Terminal / your Python launcher 
+# Automation or Accessibility permissions in 
+# System Settings → Privacy & Security for native dialogs 
+# to work without falling back to Tk dialogs.
+# If the Cricut device doesn’t appear, you may need FTDI VCP drivers (check FTDI site). 
 
-Newer macOS versions may block driver kexts — follow 
-Apple/FTDI instructions if the device is not visible under /dev/cu.*.
+# Newer macOS versions may block driver kexts — follow 
+# Apple/FTDI instructions if the device is not visible under /dev/cu.*.
 
-Windows:
-Serial devices appear as COM ports (COM3, COM4, …). 
-Ensure no other program is holding the port open.
+# Windows:
+# Serial devices appear as COM ports (COM3, COM4, …). 
+# Ensure no other program is holding the port open.
 
-Safety & workflow
-You will have to have any cartridge in the Cricut and Load the mat with the Load Mat
-on the Cricut and Unload it as well after cutting is complete
-Dry-run is enabled by default (the app will log packets instead of moving the blade). 
-Always validate a dry-run before performing a live cut.
-Verify mat bounds with “Load / Detect Mat” before cutting if you plan to do live cuts.
-```
+# Safety & workflow
+# You will have to have any cartridge in the Cricut and Load the mat with the Load Mat
+# on the Cricut and Unload it as well after cutting is complete
+# Dry-run is enabled by default (the app will log packets instead of moving the blade). 
+# Always validate a dry-run before performing a live cut.
+# Verify mat bounds with “Load / Detect Mat” before cutting if you plan to do live cuts.
+
 # Requirements for full feature set (image tracing, text vectorization, serial)
 customtkinter
 Pillow>=9.0.0
