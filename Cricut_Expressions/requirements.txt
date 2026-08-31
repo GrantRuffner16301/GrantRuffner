@@ -1,0 +1,7 @@
+# Requirements for full feature set (image tracing, text vectorization, serial)
+customtkinter
+Pillow>=9.0.0
+numpy>=1.21
+opencv-python>=4.5
+matplotlib>=3.4
+pyserial>=3.5
