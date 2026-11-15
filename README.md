@@ -1,8 +1,10 @@
 # Hi, I'm Grant Ruffner 👋
 
-Software engineer focused on **Python, JavaScript, AI integration, and hardware automation**. I build practical tools that connect software, electronics, and real-world workflows.
 
-Currently pursuing an **AAS in AI Software Engineering** at Maestro College, with plans to continue into a computer science bachelor's program.
+I am an AI Software Engineering student at Maestro The AI University pursuing AAS with a 4.0 GPA while building practical software projects in Python, JavaScript, Flask, SQLite, and Arduino development.
+Before entering software development, I spent more than two decades solving real-world problems in construction, project coordination, electronics, and technical troubleshooting. That experience taught me how to break complex problems into manageable pieces, work with stakeholders, and deliver reliable results.
+Recent projects include desktop applications built with Python and SQLite, Arduino-based automation systems, and web applications using Flask. I enjoy debugging, learning new technologies, and building software that solves practical problems.
+Currently seeking software engineering internships, AI development opportunities, and junior developer roles where I can combine hands-on experience with modern software engineering practices.
 
 ## Technologies
 
